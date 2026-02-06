@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { noop } from "../../helpers.ts";
 import { API } from "../../api/api.ts";
 import { TJoinProductionOptions, TLine } from "./types.ts";
@@ -13,23 +13,23 @@ type TProps = {
 export const useLinePolling = ({ callId, joinProductionOptions }: TProps) => {
   const [line, setLine] = useState<TLine | null>(null);
   const [, dispatch] = useGlobalState();
+  const failure401Count = useRef(0);
 
   useEffect(() => {
     if (!joinProductionOptions) return noop;
-
-    let failure401Count = 0;
     const productionId = parseInt(joinProductionOptions.productionId, 10);
     const lineId = parseInt(joinProductionOptions.lineId, 10);
+    failure401Count.current = 0;
 
     const interval = window.setInterval(() => {
       API.fetchProductionLine(productionId, lineId)
         .then((l) => {
-          failure401Count = 0;
+          failure401Count.current = 0;
           setLine(l);
         })
         .catch((err) => {
           if (err.status === 401) {
-            failure401Count += 1;
+            failure401Count.current += 1;
           }
           // Might want to add another dispatch here for other error codes.
           logger.red(
@@ -44,7 +44,7 @@ export const useLinePolling = ({ callId, joinProductionOptions }: TProps) => {
               ),
             },
           });
-          if (failure401Count >= 10) {
+          if (failure401Count.current >= 10) {
             dispatch({
               type: "ERROR",
               payload: {

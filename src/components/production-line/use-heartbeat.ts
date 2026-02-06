@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { API } from "../../api/api.ts";
 import { noop } from "../../helpers.ts";
 import logger from "../../utils/logger.ts";
@@ -8,19 +8,19 @@ type TProps = { sessionId: string | null };
 
 export const useHeartbeat = ({ sessionId }: TProps) => {
   const [, dispatch] = useGlobalState();
+  const failure401Count = useRef(0);
 
   useEffect(() => {
     if (!sessionId) return noop;
 
-    let failure401Count = 0;
     const interval = window.setInterval(() => {
       API.heartbeat({ sessionId })
         .then(() => {
-          failure401Count = 0; // resets after success
+          failure401Count.current = 0; // resets after success
         })
         .catch((err) => {
           if (err.status === 401) {
-            failure401Count += 1;
+            failure401Count.current += 1;
           }
           // Might want to add another dispatch here for other error codes.
           logger.red(`Error sending heartbeat for session ${sessionId}.`);
