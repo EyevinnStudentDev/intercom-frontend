@@ -43,7 +43,7 @@ export const CallsPage = () => {
   const [confirmExitModalOpen, setConfirmExitModalOpen] =
     useState<boolean>(false);
   const [isMasterInputMuted, setIsMasterInputMuted] = useState<boolean>(true);
-  const [{ calls, selectedProductionId, websocket }, dispatch] =
+  const [{ calls, callOrder, selectedProductionId, websocket }, dispatch] =
     useGlobalState();
   const {
     deregisterCall,
@@ -93,7 +93,7 @@ export const CallsPage = () => {
   });
 
   useEffect(() => {
-    callIndexMap.current = {};
+    callIndexMap.current = {}; // TODO: Implement new callOrder
     Object.keys(calls).forEach((callId, i) => {
       callIndexMap.current[i + 1] = callId;
     });
@@ -218,6 +218,7 @@ export const CallsPage = () => {
             callActionHandlers={callActionHandlers}
             shouldReduceVolume={shouldReduceVolume}
             calls={calls}
+            callOrder={callOrder}
             registerCallList={registerCallList}
             deregisterCall={deregisterCall}
           />

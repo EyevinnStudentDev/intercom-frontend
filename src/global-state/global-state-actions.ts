@@ -12,6 +12,8 @@ export type TGlobalStateAction =
   | TAddCallState
   | TUpdateCallState
   | TRemoveCallState
+  | TMoveCall
+  | TMoveCall
   | TSetWebSocket
   | THeartbeatError;
 
@@ -55,6 +57,11 @@ export type TUpdateCallState = {
 export type TRemoveCallState = {
   type: "REMOVE_CALL";
   payload: { id: string };
+};
+
+export type TMoveCall = {
+  type: "MOVE_CALL";
+  payload: { id: string; toIndex: number };
 };
 
 export type TUpdateUserSettings = {

@@ -34,6 +34,7 @@ export type TGlobalState = {
   calls: {
     [key: string]: CallState;
   };
+  callOrder: string[];
   userSettings: TUserSettings | null;
   production: TProduction | null;
   error: ErrorState;

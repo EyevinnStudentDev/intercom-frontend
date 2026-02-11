@@ -4,6 +4,7 @@ import { ProductionLine } from "../production-line/production-line";
 
 type ProductionLinesProps = {
   calls: Record<string, CallState>;
+  callOrder: string[];
   shouldReduceVolume: boolean;
   isSingleCall: boolean;
   customGlobalMute: string;
@@ -23,6 +24,7 @@ type ProductionLinesProps = {
 
 export const ProductionLines = ({
   calls,
+  callOrder,
   shouldReduceVolume,
   isSingleCall,
   customGlobalMute,
@@ -35,6 +37,8 @@ export const ProductionLines = ({
 }: ProductionLinesProps) => {
   return (
     <>
+      {console.log(calls)}
+      {console.log("Call order: ", callOrder)}
       {Object.entries(calls).map(
         ([callId, callState]) =>
           callId &&

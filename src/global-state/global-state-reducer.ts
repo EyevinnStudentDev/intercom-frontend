@@ -13,6 +13,7 @@ const initialGlobalState: TGlobalState = {
   userSettings: null,
   selectedProductionId: null,
   calls: {},
+  callOrder: [],
   apiError: false,
   websocket: null,
 };
@@ -77,12 +78,14 @@ const globalReducer: Reducer<TGlobalState, TGlobalStateAction> = (
         selectedProductionId: action.payload,
       };
     case "ADD_CALL":
+      const id = action.payload.id;
       return {
         ...state,
         calls: {
           ...state.calls,
-          [action.payload.id]: action.payload.callState,
+          [id]: action.payload.callState,
         },
+        callOrder: state.callOrder.includes(id) ? state.callOrder : [...state.callOrder, id]
       };
     case "UPDATE_CALL":
       if (
@@ -102,14 +105,37 @@ const globalReducer: Reducer<TGlobalState, TGlobalStateAction> = (
         },
       };
     case "REMOVE_CALL": {
+      const id = action.payload.id;
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      const { [action.payload.id]: _, ...remainingCalls } = state.calls;
+      const { [id]: _, ...remainingCalls } = state.calls;
 
       return {
         ...state,
         calls: remainingCalls,
+        callOrder: state.callOrder.filter( (callId) => callId !== id), 
         production: null,
       };
+    }; 
+    case "MOVE_CALL": {
+      const callId = action.payload.id; 
+      const toIndex = action.payload.toIndex;
+      const currentIndex = state.callOrder.findIndex( (id) => id === callId); 
+      if (currentIndex === -1 || 
+          currentIndex === toIndex || 
+          toIndex < 0 || 
+          toIndex >= state.callOrder.length) {
+        return state;
+      }
+        
+      // Insert att new index, shuffle array
+      const newArray = [...state.callOrder];
+      const [id] = newArray.splice(currentIndex, 1);
+      newArray.splice(toIndex, 0, id);
+
+      return {
+        ...state, 
+        callOrder: newArray,
+      }
     }
     case "UPDATE_USER_SETTINGS":
       return {
