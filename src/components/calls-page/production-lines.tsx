@@ -37,10 +37,9 @@ export const ProductionLines = ({
 }: ProductionLinesProps) => {
   return (
     <>
-      {console.log(calls)}
-      {console.log("Call order: ", callOrder)}
-      {callOrder.map( (callId) => {
+      {callOrder.map( (callId, i) => {
         const callState = calls[callId];
+        const currentIndex = i;
         if (!callState?.joinProductionOptions) {
           return null;
         }
@@ -50,6 +49,7 @@ export const ProductionLines = ({
               id={callId}
               shouldReduceVolume={shouldReduceVolume}
               callState={callState}
+              currentCallOrderIndex={currentIndex}
               isSingleCall={isSingleCall}
               customGlobalMute={customGlobalMute}
               masterInputMute={isMasterInputMuted}

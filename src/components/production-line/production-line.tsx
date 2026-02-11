@@ -51,6 +51,7 @@ import { UserList } from "./user-list.tsx";
 type TProductionLine = {
   id: string;
   callState: CallState;
+  currentCallOrderIndex: number;
   isSingleCall: boolean;
   customGlobalMute: string;
   masterInputMute: boolean;
@@ -71,6 +72,7 @@ type TProductionLine = {
 export const ProductionLine = ({
   id,
   callState,
+  currentCallOrderIndex,
   isSingleCall,
   customGlobalMute,
   masterInputMute,
@@ -424,6 +426,14 @@ export const ProductionLine = ({
     }
   };
 
+  const onMoveCall = (toIndex: number) => {
+    console.log("Move call to index: ", toIndex);
+    dispatch({
+      type: "MOVE_CALL",
+      payload: { id, toIndex },
+    });
+  };
+
   // TODO detect if browser back button is pressed and run exit();
 
   return (
@@ -460,6 +470,21 @@ export const ProductionLine = ({
       )}
       {!connectionError && !loading && (
         <CallContainer isProgramLine={line?.programOutputLine}>
+          <div
+            style={{
+              display: "flex",
+              gap: "0.5rem",
+              justifyContent: "flex-end",
+              padding: "0.5rem 1rem 0 1rem",
+            }}
+          >
+            <button type="button" onClick={() => onMoveCall(currentCallOrderIndex - 1)}>
+              Left
+            </button>
+            <button type="button" onClick={() => onMoveCall(currentCallOrderIndex + 1)}>
+              Right
+            </button>
+          </div>
           {line && (
             <CallHeaderComponent
               open={open}
