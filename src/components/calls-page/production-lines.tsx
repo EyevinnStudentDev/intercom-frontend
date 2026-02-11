@@ -39,10 +39,12 @@ export const ProductionLines = ({
     <>
       {console.log(calls)}
       {console.log("Call order: ", callOrder)}
-      {Object.entries(calls).map(
-        ([callId, callState]) =>
-          callId &&
-          callState.joinProductionOptions && (
+      {callOrder.map( (callId) => {
+        const callState = calls[callId];
+        if (!callState?.joinProductionOptions) {
+          return null;
+        }
+        return (
             <ProductionLine
               key={callId}
               id={callId}
@@ -57,8 +59,8 @@ export const ProductionLines = ({
               registerCallList={registerCallList}
               deregisterCall={deregisterCall}
             />
-          )
-      )}
+        );
+      })}
     </>
   );
 };
